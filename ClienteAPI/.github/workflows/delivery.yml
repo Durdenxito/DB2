@@ -1,0 +1,53 @@
+# .github/workflows/delivery.yml
+
+name: 3. Delivery Manual y Prueba de Prometheus
+
+# Se activa manualmente
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-and-query:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Clona el repositorio (para obtener docker-compose.yml, db/, metrics/, etc.)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Inicia sesión en GHCR (para descargar tu imagen de API privada)
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 3. Levantar toda la infraestructura
+      - name: Run Docker Compose
+        run: docker-compose up -d
+
+      # 4. Esperar 30s a que la BD esté lista
+      - name: Wait for services
+        run: sleep 30
+
+      # 5. Ejecutar el "Comando Mágico" de la BD
+      # (Este es el comando exacto que encontramos para arreglar el driver y SSL)
+      - name: Run DB Migration
+        run: |
+          docker exec -it -u root bd_clientes /bin/bash -c "echo -e '\n[ODBC Driver 17 for SQL Server]\nDescription=Microsoft ODBC Driver 17 for SQL Server\nDriver=/opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.10.so.6.1\nUsageCount=1' >> /etc/odbcinst.ini; /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Upt.2022 -i /tmp/clientes.sql -C"
+
+      # 6. Esperar 10s a que la API se conecte
+      - name: Wait for API
+        run: sleep 10
+
+      # 7. Hacer la petición GET a Prometheus (como se pidió)
+      - name: Query Prometheus Metric
+        run: |
+          echo "Haciendo ping a Prometheus..."
+          curl -s http://localhost:9090/api/v1/query?query=up
+      
+      # 8. Limpiar los contenedores del runner
+      - name: Shutdown services
+        if: always()
+        run: docker-compose down
