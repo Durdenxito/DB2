@@ -29,7 +29,7 @@ jobs:
 
       - name: Run DB Migration
         run: |
-          docker exec -it -u root bd_clientes /bin/bash -c "echo -e '\n[ODBC Driver 17 for SQL Server]\nDescription=Microsoft ODBC Driver 17 for SQL Server\nDriver=/opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.10.so.6.1\nUsageCount=1' >> /etc/odbcinst.ini; /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Upt.2022 -i /tmp/clientes.sql -C"
+          docker exec -u root bd_clientes /bin/bash -c "echo -e '\n[ODBC Driver 17 for SQL Server]\nDescription=Microsoft ODBC Driver 17 for SQL Server\nDriver=/opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.10.so.6.1\nUsageCount=1' >> /etc/odbcinst.ini; /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Upt.2022 -i /tmp/clientes.sql -C"
 
       - name: Wait for API
         run: sleep 10
