@@ -1,8 +1,8 @@
-# .github/workflows/buildimage.yml
 
-name: 2. Construir y Publicar Imagen Docker
 
-# Se activa en cada push a la rama 'main'
+name: Dockersito
+
+
 on:
   push:
     branches: [ "main" ]
@@ -11,30 +11,29 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     
-    # Permisos para escribir en el registro de paquetes (GHCR)
     permissions:
       contents: read
       packages: write
 
     steps:
-      # 1. Clona el repositorio
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Inicia sesión en GitHub Container Registry (GHCR)
+  
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }} # Tu usuario de GitHub
-          password: ${{ secrets.GITHUB_TOKEN }} # Token automático de GitHub
+          username: ${{ github.actor }} 
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 3. Construye y publica la imagen
+
       - name: Build and push API image
         uses: docker/build-push-action@v5
         with:
-          # Apunta a la carpeta que tiene tu Dockerfile
+
           context: .
           push: true
-          # Etiqueta la imagen: ghcr.io/tu-usuario/tu-repo:latest
-          tags: ghcr.io/Durdenxito/DB2:latest
+
+          tags: ghcr.io/Durdenxito/db2:latest

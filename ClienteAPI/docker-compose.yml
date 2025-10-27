@@ -13,7 +13,7 @@ services:
       - ./db:/tmp
 
   api:
-    image: ghcr.io/Durdenxito/DB2:latest
+    image: ghcr.io/Durdenxito/db2:latest
     container_name: api_clientes
     ports:
       - "5000:8080"
