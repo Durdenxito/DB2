@@ -36,4 +36,4 @@ jobs:
           context: .
           push: true
 
-          tags: ghcr.io/Durdenxito/db2:latest
+          tags: ghcr.io/durdenxito/db2:latest
